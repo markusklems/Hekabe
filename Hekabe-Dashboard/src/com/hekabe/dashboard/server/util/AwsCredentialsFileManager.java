@@ -44,7 +44,9 @@ public class AwsCredentialsFileManager {
 	 * @param awsCred
 	 */
 	private void writeFile(Properties awsCred) {
-		File file = new File("WEB-INF/classes/" + fileName);
+		//System.out.println("file: " + getClass().getResource("").getPath());
+		
+		File file = new File(getClass().getResource("").getPath() + "../../../../../" + fileName);
 		
 		try {
 			awsCred.store(new FileOutputStream(file), "AWS Credentials");

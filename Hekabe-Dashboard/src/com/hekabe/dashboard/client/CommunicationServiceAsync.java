@@ -20,4 +20,5 @@ public interface CommunicationServiceAsync {
 	void rebalanceToken(String user, long timestamp, AsyncCallback<String> callback);
 	void getConfigValues(String user, long timestamp, AsyncCallback<NewClusterExchange> callback);
 	void setConfigValues(String user, long timestamp, HashMap<String, String> parameters, AsyncCallback<String> callback);
+	void addUser(HashMap<String, String> userData, AsyncCallback<Boolean> callback);
 }

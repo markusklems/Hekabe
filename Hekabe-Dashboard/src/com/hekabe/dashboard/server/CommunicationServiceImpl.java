@@ -15,6 +15,7 @@ public class CommunicationServiceImpl extends RemoteServiceServlet implements
 		CommunicationService {
 	private static final long serialVersionUID = 1L;
 	private NewClusterImpl newClusterImpl;
+	private MgmtImpl mgmtImpl = new MgmtImpl();
 
 	/**
 	 * Starts a cluster.
@@ -23,8 +24,7 @@ public class CommunicationServiceImpl extends RemoteServiceServlet implements
 		newClusterImpl = new NewClusterImpl(ex, new ProgessObserver());
 		newClusterImpl.startInstance();
 		
-		MgmtImpl m = new MgmtImpl();
-		m.saveCluster(ex);
+		mgmtImpl.saveCluster(ex);
 		
 		return "WELL DONE!";
 	}
@@ -71,15 +71,37 @@ public class CommunicationServiceImpl extends RemoteServiceServlet implements
 			String user = loginData.get("user");
 			String password = loginData.get("password");
 			if(user != null && password != null) {
-				if(user.equals("admin")) result = true;
-				if(user.equals("fabi")) result = true;
-				if(user.equals("max") && password.equals("max")) result = true;				
+				return mgmtImpl.checkUser(user, password);			
 			}			
 		}
 		
 		return result;
 	}
 
+	
+	/**
+	 * Checks login Data
+	 */
+	public Boolean addUser(HashMap<String, String> userData) {
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		boolean result = false;
+		if(userData.containsKey("user") && userData.containsKey("password")) {
+			String user = userData.get("user");
+			String password = userData.get("password");
+			String ec2AccessKey = userData.get("ec2AccessKey");
+			String ec2AccessKeySecret = userData.get("ec2AccessKeySecret");
+			if(user != null && password != null && ec2AccessKey != null && ec2AccessKeySecret != null) {
+				return mgmtImpl.addUser(user, password, ec2AccessKey, ec2AccessKeySecret);			
+			}			
+		}
+		
+		return result;
+	}
+	
 	/**
 	 * Returns ClusterData of a given user.
 	 */

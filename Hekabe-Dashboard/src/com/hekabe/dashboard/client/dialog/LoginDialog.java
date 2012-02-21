@@ -24,14 +24,19 @@ public class LoginDialog extends Dialog {
 	private DynamicForm dynamicForm;
 	private TextItem txtUser;
 	private PasswordItem txtPassword;
+	private TextItem txtEC2AccessKey;
+	private TextItem txtEC2AccessKeySecret;
 	private Label responseLabel;
 	private IButton btnLogin;
+	private IButton btnAddUser;
 	private VLayout layout;
 	private Dashboard dashboard;
 	private CommunicationServiceAsync rpcService;
 	private HashMap<String, String> loginData;
 	private String user;
 	private String password;
+	private String ec2AccessKey;
+	private String ec2AccessKeySecret;
 
 	/**
 	 * Creates LoginDialog
@@ -53,17 +58,20 @@ public class LoginDialog extends Dialog {
 		setShowCloseButton(false);
 
 		btnLogin = new IButton("Login");
-		setToolbarButtons(btnLogin);
+		btnAddUser = new IButton("Add User");
+		setToolbarButtons(btnAddUser, btnLogin);
 		setShowToolbar(true);
 		
 		dynamicForm = new DynamicForm();
 		txtUser = new TextItem("txtUser", "User");
 		txtPassword = new PasswordItem("txtPassword", "Password");
+		txtEC2AccessKey = new TextItem("txtEC2AccessKey", "EC2 Access Key");
+		txtEC2AccessKeySecret = new TextItem("txtEC2AccessKeySecret", "EC2 Access Key Secret");
 		responseLabel = new Label("");
 		responseLabel.setStyleName("error");
 		responseLabel.setHeight(14);
 		
-		dynamicForm.setFields(new FormItem[] { txtUser, txtPassword });
+		dynamicForm.setFields(new FormItem[] { txtUser, txtPassword, txtEC2AccessKey, txtEC2AccessKeySecret });
 		dynamicForm.setAutoFocus(true);
 		
 		layout.addMember(dynamicForm);	
@@ -80,6 +88,12 @@ public class LoginDialog extends Dialog {
 		btnLogin.addClickHandler(new ClickHandler() {			
 			public void onClick(ClickEvent event) {
 				doDialogSubmit();
+			}
+		});
+		
+		btnAddUser.addClickHandler(new ClickHandler() {			
+			public void onClick(ClickEvent event) {
+				doDialogAddUser();
 			}
 		});
 
@@ -121,6 +135,38 @@ public class LoginDialog extends Dialog {
 
 			public void onSuccess(Boolean result) {
 				btnLogin.setIcon(null);
+				if(result) {
+					loginSuccesful();					
+				} else {					
+					loginFailed();
+				}				
+			}
+		});
+	}
+	
+	private void doDialogAddUser() {
+		btnAddUser.setIcon("[SKIN]/loadingSmall.gif");
+		loginData = new HashMap<String, String>();
+		user = txtUser.getValueAsString();
+		password = txtPassword.getValueAsString();
+		ec2AccessKey = txtEC2AccessKey.getValueAsString();
+		ec2AccessKeySecret = txtEC2AccessKeySecret.getValueAsString();
+		loginData.put("user", user);
+		loginData.put("password", password);
+		loginData.put("ec2AccessKey", ec2AccessKey);
+		loginData.put("ec2AccessKeySecret", ec2AccessKeySecret);
+		
+		
+		rpcService.addUser(loginData, new AsyncCallback<Boolean>() {						
+
+			public void onFailure(Throwable caught) {
+				btnAddUser.setIcon(null);
+				responseLabel.setContents("Server communication failed");
+				responseLabel.setIcon("[SKIN]/actions/exclamation.png");				
+			}
+
+			public void onSuccess(Boolean result) {
+				btnAddUser.setIcon(null);
 				if(result) {
 					loginSuccesful();					
 				} else {					

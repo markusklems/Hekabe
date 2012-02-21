@@ -22,4 +22,5 @@ public interface CommunicationService extends RemoteService {
 	String rebalanceToken(String user, long timestamp);
 	NewClusterExchange getConfigValues(String user, long timestamp);
 	String setConfigValues(String user, long timestamp, HashMap<String, String> parameters);
+	Boolean addUser(HashMap<String, String> userData);
 }

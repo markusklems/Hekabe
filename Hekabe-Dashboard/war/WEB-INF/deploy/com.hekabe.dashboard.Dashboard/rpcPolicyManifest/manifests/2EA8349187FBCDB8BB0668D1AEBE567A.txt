@@ -1,0 +1,2 @@
+serviceClass: com.hekabe.dashboard.client.CommunicationService
+path: 1CC15022F00A110F7052D20E60277D7D.gwt.rpc
