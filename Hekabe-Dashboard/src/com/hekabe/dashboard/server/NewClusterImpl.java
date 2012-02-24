@@ -1,20 +1,16 @@
 package com.hekabe.dashboard.server;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.PropertiesCredentials;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.hekabe.cassandra.cluster.CassandraCluster;
 import com.hekabe.cassandra.cluster.CassandraMultiRegionCluster;
 import com.hekabe.cassandra.cluster.EC2CassandraCluster;
 import com.hekabe.cassandra.cluster.StaticCassandraCluster;
-import com.hekabe.dashboard.server.util.AwsCredentialsFileManager;
 import com.hekabe.dashboard.server.util.ProgessObserver;
 import com.hekabe.dashboard.shared.IpExchange;
 import com.hekabe.dashboard.shared.NewClusterExchange;
@@ -47,31 +43,9 @@ public class NewClusterImpl {
 	/**
 	 * Process to start a new Cluster
 	 */
-	public void startInstance() {
-		InputStream credentialsAsStream;
-		
+	public void startInstance(AWSCredentials credentials) {
 		observer.setStatus("Loading credentials");	
-		
-		// if no userinput for access key and secret access use, use default awscred.prop, otherwise create awscred.prop with TIMESTAMP.properties.
-		if(ex.getAccessKey() == null && ex.getSecretAccessKey() == null) {
-			credentialsAsStream = Thread.currentThread()
-					.getContextClassLoader()
-					.getResourceAsStream("AwsCredentials.properties");
-		} else {
-			AwsCredentialsFileManager awsCred = new AwsCredentialsFileManager(ex.getAccessKey(), ex.getSecretAccessKey());
-			credentialsAsStream = Thread.currentThread()
-					.getContextClassLoader()
-					.getResourceAsStream(awsCred.createFile());
-		}
-		
-		AWSCredentials credentials = null;
-
-		try {
-			credentials = new PropertiesCredentials(credentialsAsStream);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
+				
 		AmazonEC2 ec2 = null;
 		EC2CassandraCluster ec2Cluster = null;
 		StaticCassandraCluster staticCluster = null;
@@ -88,11 +62,11 @@ public class NewClusterImpl {
 		
 		// start first instance
 		if(ex.getProvider().equals(StringParameter.AMAZON_EC2)) {
-			observer.setStatus("Starting AWS EC2 cluster");
 			
 			ec2 = new AmazonEC2Client(credentials);
 			ec2.setEndpoint(getEndpoint(ex.getRegion()));
 			
+			observer.setStatus("Starting AWS EC2 cluster");
 			ec2Cluster = EC2CassandraCluster.initializeCluster(
 					ec2, 
 					getImageID(ex.getRegion()), 

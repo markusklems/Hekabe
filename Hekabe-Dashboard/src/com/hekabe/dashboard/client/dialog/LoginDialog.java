@@ -50,7 +50,7 @@ public class LoginDialog extends Dialog {
 		
 		layout = new VLayout();		
 		setTitle("Login");
-		setHeight(160);
+		setHeight(400);
 		setIsModal(true);
 		setShowModalMask(true);
 		setAutoFocus(false);

@@ -72,7 +72,11 @@ public class MgmtImpl {
 	private final String SIMPLEDB_DOMAIN = "hekabe-cluster";
 
 	private static final ObjectContainer userdb = Db4oEmbedded.openFile(
-			Db4oEmbedded.newConfiguration(), "db4o-userdb");
+			Db4oEmbedded.newConfiguration(), MgmtImpl.class.getResource("").getPath() + "db4o-userdb");
+	{
+		System.out.println("using db:" + MgmtImpl.class.getResource("").getPath() + "db4o-userdb");
+	}
+	
 
 	/**
 	 * Stores user, timestamp and status in SimpleDB and writes the XML file
@@ -681,10 +685,10 @@ public class MgmtImpl {
 	 * @param ex
 	 * @return
 	 */
-	private AWSCredentials getCredentials(NewClusterExchange ex) {
+	public AWSCredentials getCredentials(NewClusterExchange ex) {
 		InputStream credentialsAsStream = null;
 		if (ex.getAccessKey() == null && ex.getSecretAccessKey() == null) {
-			return getUser(ex.getLogin()).getCredentials();
+			return getUser(ex.getUsername()).getCredentials();
 		} else {
 			StringBuilder sb = new StringBuilder(String.valueOf(ex
 					.getTimestamp()));
@@ -1015,13 +1019,13 @@ public class MgmtImpl {
 			String ec2AccessKey, String ec2AccessKeySecret) {
 		userdb.store(new User(username, password, ec2AccessKey,
 				ec2AccessKeySecret));
+		userdb.commit();
 		return userdb.queryByExample(
 				new User(username, password, ec2AccessKey, ec2AccessKeySecret))
 				.size() > 0;
 	}
 
 	public boolean checkUser(String username, String password) {
-		System.out.println(userdb.ext().configure().storage());
 		return userdb.queryByExample(new User(username, password, null, null))
 				.size() > 0;
 	}

@@ -22,7 +22,7 @@ public class CommunicationServiceImpl extends RemoteServiceServlet implements
 	 */
 	public String startInstance(NewClusterExchange ex) {
 		newClusterImpl = new NewClusterImpl(ex, new ProgessObserver());
-		newClusterImpl.startInstance();
+		newClusterImpl.startInstance(mgmtImpl.getCredentials(ex));
 		
 		mgmtImpl.saveCluster(ex);
 		

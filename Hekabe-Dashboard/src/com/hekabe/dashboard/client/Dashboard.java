@@ -49,7 +49,7 @@ public class Dashboard implements EntryPoint {
 		CommunicationServiceAsync rpcService = GWT.create(CommunicationService.class);
 		
 		RootPanel rootPanel = RootPanel.get("content");
-		rootPanel.setSize("1000", "630");
+		rootPanel.setSize("100%", "100%");
 		
 		mgmtView = new MgmtView(this, rpcService);
 		newClusterView = new NewClusterView(this, rpcService);
@@ -58,7 +58,7 @@ public class Dashboard implements EntryPoint {
 		
 		sectionStack = new SectionStack();
 		sectionStack.setVisibilityMode(VisibilityMode.MUTEX);
-		sectionStack.setSize("1000", "622");
+		sectionStack.setSize("100%", "100%");
 		
 		managementSection = new SectionStackSection(StringParameter.MANAGEMENT);
 		newClusterSection = new SectionStackSection(StringParameter.NEW_CLUSTER);
